@@ -12,13 +12,12 @@ on:
         required: true
         default: 'LOGIN'
 
-# Даем явные права на деплой официальному роботу GitHub Pages
+# Даем права официальным роботам GitHub на публикацию страниц Pages
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
-# Запрещаем одновременные деплои, чтобы они не конфликтовали
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -60,11 +59,14 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      - name: Deploy Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      # Нативный шаг 1: Формируем официальный веб-артефакт для GitHub Pages
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         if: always()
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-          force_orphan: true # <-- Этот флаг исправит ошибку 128, очистив конфликтную историю гит-веток
+          path: allure-history
+
+      # Нативный шаг 2: Публикуем отчет напрямую на сайт без использования сторонних экшенов
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        if: always()
