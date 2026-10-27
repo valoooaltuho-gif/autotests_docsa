@@ -6,17 +6,22 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-    # Добавляем поле для ручного ввода тега при запуске кнопкой
     inputs:
       test_tag:
         description: 'Укажите JUnit тег для запуска (например: LOGIN)'
         required: true
         default: 'LOGIN'
 
+# Даем явные права на деплой официальному роботу GitHub Pages
 permissions:
   contents: write
   pages: write
   id-token: write
+
+# Запрещаем одновременные деплои, чтобы они не конфликтовали
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   test:
@@ -35,10 +40,8 @@ jobs:
 
       - name: Run Selenide Tests
         run: |
-          # Если запуск автоматический (по push), берем LOGIN по умолчанию. Если ручной — берем то, что ввел пользователь.
           TAG="${{ github.event.inputs.test_tag }}"
           if [ -z "$TAG" ]; then TAG="LOGIN"; fi
-          
           mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
 
       - name: Get Allure history
@@ -64,3 +67,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+          force_orphan: true # <-- Этот флаг исправит ошибку 128, очистив конфликтную историю гит-веток
