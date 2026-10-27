@@ -6,8 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+    # Добавляем поле для ручного ввода тега при запуске кнопкой
+    inputs:
+      test_tag:
+        description: 'Укажите JUnit тег для запуска (например: LOGIN)'
+        required: true
+        default: 'LOGIN'
 
-# Даем права серверу GitHub публиковать код на GitHub Pages
 permissions:
   contents: write
   pages: write
@@ -29,7 +34,12 @@ jobs:
           cache: 'maven'
 
       - name: Run Selenide Tests
-        run: mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true
+        run: |
+          # Если запуск автоматический (по push), берем LOGIN по умолчанию. Если ручной — берем то, что ввел пользователь.
+          TAG="${{ github.event.inputs.test_tag }}"
+          if [ -z "$TAG" ]; then TAG="LOGIN"; fi
+          
+          mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
 
       - name: Get Allure history
         uses: actions/checkout@v4
