@@ -62,7 +62,7 @@ public class TestBase extends BasePage{
 
     private static ChromeOptions getChromeOptions() {
         ChromeOptions options = new ChromeOptions();
-        //if (isBackground()) options.addArguments("--headless");
+        if (isBackground()) options.addArguments("--headless");
         //if (shouldUseDevTools()) options.addArguments("--auto-open-devtools-for-tabs");
 
         return options
