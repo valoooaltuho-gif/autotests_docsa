@@ -1,0 +1,21 @@
+# Сборка Maven
+target/
+*.jar
+*.war
+
+# Настройки IntelliJ IDEA
+.idea/
+*.iml
+out/
+.artifacts/
+
+# Логи и отчеты автоматизации (будут генерироваться на сервере заново)
+allure-results/
+allure-report/
+.selenide/
+downloads/
+screenshots/
+
+# Секретные файлы конфигурации (если есть локально)
+.env
+*.local.properties
