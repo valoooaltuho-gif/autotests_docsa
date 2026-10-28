@@ -42,7 +42,31 @@ jobs:
           if [ -z "$TAG" ]; then TAG="LOGIN"; fi
           mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
 
-      # Используем официальный экшен для генерации Allure-отчета
+      # Шаг 1: Пытаемся скачать историю ИЗ ПРЕДЫДУЩЕГО успешного запуска на GitHub Actions
+      - name: Download history from previous artifact
+        uses: dawidd6/action-download-artifact@v9
+        if: always()
+        continue-on-error: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: run-tests.yml
+          workflow_conclusion: success
+          name: allure-report-artifact
+          path: previous-allure-report
+
+      # Шаг 2: Если прошлая история скачалась, перекладываем её в папку результатов для склеивания
+      - name: Copy previous history to allure-results
+        if: always()
+        run: |
+          if [ -d "previous-allure-report/history" ]; then
+            mkdir -p allure-results/history
+            cp -r previous-allure-report/history/* allure-results/history/
+            echo "Предыдущая история успешно скопирована!"
+          else
+            echo "Предыдущая история не найдена, это первый прогон."
+          fi
+
+      # Шаг 3: Генерируем новый отчет (он объединит свежие результаты и старую историю)
       - name: Load Allure history and generate report
         uses: simple-elf/allure-report-action@master
         if: always()
@@ -52,14 +76,22 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      # Нативный шаг 1: Формируем официальный веб-артефакт для GitHub Pages из сгенерированной папки
+      # Шаг 4: Сохраняем сгенерированный отчет как артефакт GitHub Actions (нужно для скачивания в следующем прогоне)
+      - name: Archive Allure Report for history tracking
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report-artifact
+          path: allure-report
+          retention-days: 5
+
+      # Шаг 5: Публикуем на сайт
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         if: always()
         with:
           path: allure-report
 
-      # Нативный шаг 2: Публикуем отчет напрямую на сайт
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         if: always()
