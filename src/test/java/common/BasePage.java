@@ -78,4 +78,12 @@ public abstract class BasePage {
     public static void pressOnElementXpathInListByText(String locator, int timeoutSeconds, String text) {
         $$x(locator).find(Condition.text(text)).shouldBe(visible, Duration.ofSeconds(timeoutSeconds)).scrollIntoCenter().click();
     }
+
+    public static <T extends BasePage> T initializeClassObject(Class<T> expectedPageClass) {
+        try {
+            return expectedPageClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not initialize class object: " + expectedPageClass.getSimpleName(), e);
+        }
+    }
 }
