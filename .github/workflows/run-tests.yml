@@ -12,7 +12,6 @@ on:
         required: true
         default: 'LOGIN'
 
-# Даем права официальным роботам GitHub на публикацию страниц Pages
 permissions:
   contents: read
   pages: write
@@ -43,30 +42,30 @@ jobs:
           if [ -z "$TAG" ]; then TAG="LOGIN"; fi
           mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
 
-      - name: Get Allure history
-        uses: actions/checkout@v4
+      - name: Install Allure CLI
         if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages-dir
+        run: |
+          X_ALLURE_VERSION="2.29.1"
+          curl -o allure.tgz -L https://github.com{X_ALLURE_VERSION}/allure-${X_ALLURE_VERSION}.tgz
+          tar -zxf allure.tgz
+          sudo mv allure-${X_ALLURE_VERSION} /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          allure --version
 
       - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@master
         if: always()
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 20
+        run: |
+          # Создаем пустую папку для результатов, если тесты вообще не запустились, чтобы билд не падал
+          mkdir -p allure-results
+          # Генерируем статическую HTML-страницу отчета в папку public
+          allure generate allure-results -o public --clean
 
-      # Нативный шаг 1: Формируем официальный веб-артефакт для GitHub Pages
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         if: always()
         with:
-          path: allure-history
+          path: public
 
-      # Нативный шаг 2: Публикуем отчет напрямую на сайт без использования сторонних экшенов
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         if: always()
