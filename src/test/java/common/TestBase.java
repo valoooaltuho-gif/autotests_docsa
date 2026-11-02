@@ -11,8 +11,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Configuration.baseUrl;
-import static common.Constants.DEV_URI;
-import static common.Constants.DEV_URL;
+import static common.Constants.*;
 import static common.PropertiesReader.getProperty;
 
 public class TestBase extends BasePage{
@@ -40,7 +39,8 @@ public class TestBase extends BasePage{
     private static void setupEnvironment() {
         Environment env = getEnv();
         switch (env) {
-            case dev -> setEnvUrls(DEV_URL, DEV_URI);
+            case prod -> setEnvUrls(PROD_URL, PROD_URI);
+            case stg -> setEnvUrls(STG_URL, STG_URI);
         }
     }
 
@@ -49,7 +49,7 @@ public class TestBase extends BasePage{
 
         // Если параметр не передан снаружи (или пришел плейсхолдер), берем dev по умолчанию
         if (environment == null || environment.contains("${environment}")) {
-            return Environment.dev;
+            return Environment.stg;
         }
 
         return Environment.valueOf(environment.trim().toLowerCase());

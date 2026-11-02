@@ -11,6 +11,15 @@ on:
         description: 'Укажите JUnit тег для запуска (например: LOGIN)'
         required: true
         default: 'LOGIN'
+      test_env:
+        type: choice
+        description: 'Выберите окружение для запуска тестов'
+        required: true
+        default: 'dev'
+        options:
+          - dev
+          - stg
+          - prod
 
 permissions:
   contents: read
@@ -38,9 +47,17 @@ jobs:
 
       - name: Run Selenide Tests
         run: |
+          # Обработка тега: если пустой (авто-запуск), ставим LOGIN
           TAG="${{ github.event.inputs.test_tag }}"
           if [ -z "$TAG" ]; then TAG="LOGIN"; fi
-          mvn -B clean test -Denvironment=dev -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
+          
+          # Обработка окружения: если пустое (авто-запуск), ставим dev
+          ENV="${{ github.event.inputs.test_env }}"
+          if [ -z "$ENV" ]; then ENV="dev"; fi
+          
+          echo "Запуск тестов с тегом: $TAG на окружении: $ENV"
+          
+          mvn -B clean test -Denvironment="$ENV" -Dbrowser=chrome -DisBackground=true -Dgroups="$TAG"
 
       # Шаг 1: Пытаемся скачать историю ИЗ ПРЕДЫДУЩЕГО успешного запуска на GitHub Actions
       - name: Download history from previous artifact
