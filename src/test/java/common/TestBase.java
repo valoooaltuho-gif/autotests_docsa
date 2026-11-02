@@ -5,19 +5,19 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Configuration.baseUrl;
 import static common.Constants.*;
 import static common.PropertiesReader.getProperty;
+import static common.PropertiesReader.readPropertiesFile;
 
 public class TestBase extends BasePage{
 
     @BeforeAll
     public static void setUp(TestInfo testInfo) throws Exception {
+        readPropertiesFile();
         Configuration.browser = "chrome";
         Configuration.browserCapabilities = getChromeOptions();
         Configuration.timeout = 20000;
@@ -82,6 +82,16 @@ public class TestBase extends BasePage{
 
     private static Boolean shouldUseDevTools() {
         return !"false".equals(getProperty("devTools"));
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        Selenide.closeWebDriver();
+    }
+
+    @AfterEach
+    public void afterEachTest() {
+        Selenide.closeWebDriver();
     }
 
 }
