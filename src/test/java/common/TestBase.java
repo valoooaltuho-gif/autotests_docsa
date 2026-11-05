@@ -5,6 +5,9 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -14,6 +17,8 @@ import static common.PropertiesReader.getProperty;
 import static common.PropertiesReader.readPropertiesFile;
 
 public class TestBase extends BasePage{
+
+    public static RequestSpecification requestSpec;
 
     @BeforeAll
     public static void setUp(TestInfo testInfo) throws Exception {
@@ -29,11 +34,26 @@ public class TestBase extends BasePage{
                 .savePageSource(true));
 
         setupEnvironment();
+        initApiSpecification();
+    }
+
+    private static void initApiSpecification() {
+        requestSpec = new RequestSpecBuilder()
+                .setBaseUri(RestAssured.baseURI) // Берется из DEV_URI в зависимости от env
+                .setContentType(ContentType.JSON)
+                .setAccept(ContentType.JSON)
+                .addHeader("Accept-Language", "ru-RU,ru;q=0.9")
+                .build();
     }
 
     @BeforeEach
-    public void initTest() {
-        Selenide.open(baseUrl);
+    public void initTest(TestInfo testInfo) {
+        boolean isApiTest = testInfo.getTags().contains("API");
+
+        if (!isApiTest) {
+            Selenide.open(baseUrl);
+        }
+
     }
 
     private static void setupEnvironment() {
@@ -62,7 +82,7 @@ public class TestBase extends BasePage{
 
     private static ChromeOptions getChromeOptions() {
         ChromeOptions options = new ChromeOptions();
-        //if (isBackground()) options.addArguments("--headless");
+        if (isBackground()) options.addArguments("--headless");
         //if (shouldUseDevTools()) options.addArguments("--auto-open-devtools-for-tabs");
 
         return options
