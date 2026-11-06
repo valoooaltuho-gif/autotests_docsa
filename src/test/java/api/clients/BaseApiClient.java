@@ -12,13 +12,13 @@ public class BaseApiClient {
 
     protected JsonPath post(String endpoint, Object body, int expectedStatusCode) {
         return given()
-                .spec(TestBase.requestSpec) // Подтягиваем общие заголовки и настройки из TestBase
+                .spec(TestBase.requestSpec)
                 .body(body)
                 .log().ifValidationFails()
                 .when()
                 .post(endpoint)
                 .then()
-                .statusCode(expectedStatusCode) // Базовая валидация статуса на уровне обёртки
+                .statusCode(expectedStatusCode)
                 .extract()
                 .jsonPath();
     }
@@ -33,7 +33,6 @@ public class BaseApiClient {
                 .statusCode(expectedStatusCode)
                 .extract()
                 .response()
-                // Магия Jackson: превращает JSON в Map без создания классов!
                 .as(new TypeRef<Map<String, Object>>() {});
     }
 }

@@ -12,8 +12,7 @@ import pages.SettingsPage;
 
 
 import static api.clients.LoginClient.loginClient;
-import static org.hamcrest.Matchers.notNullValue;
-import static pages.LoginPage.ERROR_MESSAGE;
+import static pages.LoginPage.ERROR_MESSAGE_INCORRECT_USERNAME_OR_PASSWORD;
 import static pages.LoginPage.loginPage;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -41,7 +40,7 @@ public class LoginTest extends TestBase {
                 .fillName("valentin")
                 .fillPassword("a789456A@1")
                 .pressLoginBtn(LoginPage.class)
-                .checkErrorMessage(ERROR_MESSAGE);
+                .checkErrorMessage(ERROR_MESSAGE_INCORRECT_USERNAME_OR_PASSWORD);
     }
 
     @Test
@@ -88,7 +87,6 @@ public class LoginTest extends TestBase {
         Assertions.assertNotNull(error);
         Assertions.assertEquals("invalid_grant", error);
         Assertions.assertEquals("Invalid username or password", errorDescription);
-
     }
 
 }

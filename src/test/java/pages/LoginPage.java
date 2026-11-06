@@ -4,18 +4,17 @@ import com.codeborne.selenide.Selenide;
 import common.BasePage;
 import io.qameta.allure.Step;
 
-import static common.BasePage.*;
-
 public class LoginPage extends BasePage{
     private final static String PASSWORD_FIELD = "//input[@id='password']";
     private final static String NAME_FIELD = "//input[@id='username']";
     private final static String LOGIN_BTN = "//button[@type='submit']";
     private final static String ERROR_MESSAGE_FIELD = "//div[@role='alert']/span";
-    public final static String ERROR_MESSAGE = "Неверное имя пользователя или пароль. Пожалуйста, проверьте свои данные.";
+    public final static String ERROR_MESSAGE_INCORRECT_USERNAME_OR_PASSWORD = "Invalid username or password. Please check your credentials.";
     public static final LoginPage loginPage = Selenide.page(LoginPage.class);
 
 
     @Step("Fill password field")
+
     public LoginPage fillPassword(String password) {
         fillFieldXpath(PASSWORD_FIELD, 5, password);
         return loginPage;

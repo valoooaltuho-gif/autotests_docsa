@@ -2,20 +2,13 @@ package tests;
 
 import common.TestBase;
 import io.qameta.allure.Description;
-import io.qameta.allure.Story;
-import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import pages.LoginPage;
-import pages.SettingsPage;
 
 import java.util.Map;
 
-import static api.clients.LoginClient.loginClient;
 import static api.clients.RegisterClient.registerClient;
-import static pages.LoginPage.ERROR_MESSAGE;
-import static pages.LoginPage.loginPage;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Execution(ExecutionMode.CONCURRENT)
@@ -55,5 +48,38 @@ public class RegisterTest extends TestBase {
         Assertions.assertEquals("Username is available", message);
     }
 
+    @Test
+    @Tag("API")
+    @Tag("REGISTER")
+    @Description("Проверка не занятой почты")
+    public void checkNotTakenEmailApiTest() {
+        String targetEmail = "valentin@mail.ru";
+        Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
+
+        String email = (String) response.get("email");
+        Boolean available = (Boolean) response.get("available");
+        String message = (String) response.get("message");
+
+        Assertions.assertEquals(targetEmail, email);
+        Assertions.assertTrue(available);
+        Assertions.assertEquals("Email is available", message);
+    }
+
+    @Test
+    @Tag("API")
+    @Tag("REGISTER")
+    @Description("Проверка не занятого email (Негативный сценарий)")
+    public void checkTakenEmailApiTest() {
+        String targetEmail = "valoooaltuho@gmail.com";
+        Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
+
+        String email = (String) response.get("email");
+        Boolean available = (Boolean) response.get("available");
+        String message = (String) response.get("message");
+
+        Assertions.assertEquals(targetEmail, email);
+        Assertions.assertFalse(available);
+        Assertions.assertEquals("Email is already registered", message);
+    }
 
 }
