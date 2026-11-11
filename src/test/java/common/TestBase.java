@@ -21,7 +21,7 @@ public class TestBase extends BasePage{
     public static RequestSpecification requestSpec;
 
     @BeforeAll
-    public static void setUp(TestInfo testInfo) throws Exception {
+    public static void setUp() throws Exception {
         readPropertiesFile();
         Configuration.browser = "chrome";
         Configuration.browserCapabilities = getChromeOptions();
