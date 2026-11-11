@@ -46,7 +46,7 @@ public class LoginTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("LOGIN")
-    @Description("Успешное получение OAuth токена через API")
+    @Description("Valid login via API")
     public void successLoginApiTest() {
         JsonPath response = loginClient.postLogin("valentin", "a789456A@",200);
 
@@ -77,7 +77,7 @@ public class LoginTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("LOGIN")
-    @Description("Попытка авторизации с неверным паролем (Негативный сценарий)")
+    @Description("Invalid login via API")
     public void loginWithInvalidPasswordApiTest() {
         JsonPath errorResponse = loginClient.postLogin("valentin", "a789456A@d", 401);
 

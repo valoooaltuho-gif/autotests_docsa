@@ -11,7 +11,6 @@ public class LoginRequest {
         this.password = password;
     }
 
-    // Геттеры и сеттеры (необходимы для Jackson)
     public String getGrant_type() { return grant_type; }
     public void setGrant_type(String grant_type) { this.grant_type = grant_type; }
     public String getUsername() { return username; }

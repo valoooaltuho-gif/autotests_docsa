@@ -66,8 +66,6 @@ public class TestBase extends BasePage{
 
     public static Environment getEnv() {
         String environment = getProperty("environment");
-
-        // Если параметр не передан снаружи (или пришел плейсхолдер), берем dev по умолчанию
         if (environment == null || environment.contains("${environment}")) {
             return Environment.stg;
         }

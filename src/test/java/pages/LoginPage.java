@@ -14,7 +14,6 @@ public class LoginPage extends BasePage{
 
 
     @Step("Fill password field")
-
     public LoginPage fillPassword(String password) {
         fillFieldXpath(PASSWORD_FIELD, 5, password);
         return loginPage;

@@ -10,12 +10,12 @@ public class RegisterClient extends BaseApiClient{
     private final static String CHECK_EMAIL_ENDPOINT = "/api/check-email/%s";
     public static final RegisterClient registerClient = new RegisterClient();
 
-    @Step("Отправка API-запроса на проверку {username}")
+    @Step("Send API-request for username check {username}")
     public Map<String, Object> getCheckUserName(String username, int expectedStatusCode) {
         return getAsMap(String.format(CHECK_USERNAME_ENDPOINT, username), expectedStatusCode);
     }
 
-    @Step("Отправка API-запроса на проверку {email}")
+    @Step("Send API-request for email check {email}")
     public Map<String, Object> getCheckEmail(String email, int expectedStatusCode) {
         return getAsMap(String.format(CHECK_EMAIL_ENDPOINT, email), expectedStatusCode);
     }

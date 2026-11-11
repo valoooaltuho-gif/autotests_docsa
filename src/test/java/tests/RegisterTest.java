@@ -17,7 +17,7 @@ public class RegisterTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("REGISTER")
-    @Description("Проверка занятого имени пользователя (Негативный сценарий)")
+    @Description("Check taken username via API")
     public void checkAlreadyTakenUsernameApiTest() {
         String targetUsername = "valentin";
         Map<String, Object> response = registerClient.getCheckUserName(targetUsername, 200);
@@ -34,7 +34,7 @@ public class RegisterTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("REGISTER")
-    @Description("Проверка не занятого имени пользователя (Негативный сценарий)")
+    @Description("Check not taken username via API")
     public void checkNotTakenUsernameApiTest() {
         String targetUsername = "valentin123";
         Map<String, Object> response = registerClient.getCheckUserName(targetUsername, 200);
@@ -51,7 +51,7 @@ public class RegisterTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("REGISTER")
-    @Description("Проверка не занятой почты")
+    @Description("Check taken email via API")
     public void checkNotTakenEmailApiTest() {
         String targetEmail = "valentin@mail.ru";
         Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
@@ -68,7 +68,7 @@ public class RegisterTest extends TestBase {
     @Test
     @Tag("API")
     @Tag("REGISTER")
-    @Description("Проверка не занятого email (Негативный сценарий)")
+    @Description("Check not taken email via API")
     public void checkTakenEmailApiTest() {
         String targetEmail = "valoooaltuho@gmail.com";
         Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
