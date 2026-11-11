@@ -1,18 +1,23 @@
 package tests;
 
+import api.clients.RegisterClient.UsernameResponseField;
 import common.TestBase;
+import api.clients.RegisterClient;
 import io.qameta.allure.Description;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.util.Map;
 
-import static api.clients.RegisterClient.registerClient;
+import static api.clients.RegisterClient.*;
+import static api.clients.RegisterClient.EmailResponseField.email;
+import static api.clients.RegisterClient.UsernameResponseField.available;
+import static api.clients.RegisterClient.UsernameResponseField.username;
+import static api.clients.RegisterClient.UsernameResponseField.message;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Execution(ExecutionMode.CONCURRENT)
-public class RegisterTest extends TestBase {
+class RegisterApiTest extends TestBase {
+
+    private final RegisterClient registerClient = new RegisterClient();
 
     @Test
     @Tag("API")
@@ -22,13 +27,13 @@ public class RegisterTest extends TestBase {
         String targetUsername = "valentin";
         Map<String, Object> response = registerClient.getCheckUserName(targetUsername, 200);
 
-        String username = (String) response.get("username");
-        Boolean available = (Boolean) response.get("available");
-        String message = (String) response.get("message");
+        String username_ = (String) response.get(username.val);
+        Boolean available_ = (Boolean) response.get(available.val);
+        String message_ = (String) response.get(message.val);
 
-        Assertions.assertEquals(targetUsername, username);
-        Assertions.assertFalse(available);
-        Assertions.assertEquals("Username is already taken", message);
+        Assertions.assertEquals(targetUsername, username_);
+        Assertions.assertFalse(available_);
+        Assertions.assertEquals(USERNAME_IS_ALREADY_TAKEN, message_);
     }
 
     @Test
@@ -39,47 +44,46 @@ public class RegisterTest extends TestBase {
         String targetUsername = "valentin123";
         Map<String, Object> response = registerClient.getCheckUserName(targetUsername, 200);
 
-        String username = (String) response.get("username");
-        Boolean available = (Boolean) response.get("available");
-        String message = (String) response.get("message");
+        String username_ = (String) response.get(username.val);
+        Boolean available_ = (Boolean) response.get(available.val);
+        String message_ = (String) response.get(message.val);
 
-        Assertions.assertEquals(targetUsername, username);
-        Assertions.assertTrue(available);
-        Assertions.assertEquals("Username is available", message);
-    }
-
-    @Test
-    @Tag("API")
-    @Tag("REGISTER")
-    @Description("Check taken email via API")
-    public void checkNotTakenEmailApiTest() {
-        String targetEmail = "valentin@mail.ru";
-        Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
-
-        String email = (String) response.get("email");
-        Boolean available = (Boolean) response.get("available");
-        String message = (String) response.get("message");
-
-        Assertions.assertEquals(targetEmail, email);
-        Assertions.assertTrue(available);
-        Assertions.assertEquals("Email is available", message);
+        Assertions.assertEquals(targetUsername, username_);
+        Assertions.assertTrue(available_);
+        Assertions.assertEquals(USERNAME_IS_AVAILABLE, message_);
     }
 
     @Test
     @Tag("API")
     @Tag("REGISTER")
     @Description("Check not taken email via API")
+    public void checkNotTakenEmailApiTest() {
+        String targetEmail = "valentin@mail.ru";
+        Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
+
+        String email_ = (String) response.get(email.val);
+        Boolean available_ = (Boolean) response.get(available.val);
+        String message_ = (String) response.get(message.val);
+
+        Assertions.assertEquals(targetEmail, email_);
+        Assertions.assertTrue(available_);
+        Assertions.assertEquals(EMAIL_IS_AVAILABLE, message_);
+    }
+
+    @Test
+    @Tag("API")
+    @Tag("REGISTER")
+    @Description("Check taken email via API")
     public void checkTakenEmailApiTest() {
         String targetEmail = "valoooaltuho@gmail.com";
         Map<String, Object> response = registerClient.getCheckEmail(targetEmail, 200);
 
-        String email = (String) response.get("email");
-        Boolean available = (Boolean) response.get("available");
-        String message = (String) response.get("message");
+        String email_ = (String) response.get(email.val);
+        Boolean available_ = (Boolean) response.get(available.val);
+        String message_ = (String) response.get(message.val);
 
-        Assertions.assertEquals(targetEmail, email);
-        Assertions.assertFalse(available);
-        Assertions.assertEquals("Email is already registered", message);
+        Assertions.assertEquals(targetEmail, email_);
+        Assertions.assertFalse(available_);
+        Assertions.assertEquals(EMAIL_IS_ALREADY_REGISTERED, message_);
     }
-
 }

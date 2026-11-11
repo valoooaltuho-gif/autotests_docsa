@@ -1,5 +1,6 @@
 package tests;
 
+import api.clients.LoginClient;
 import common.TestBase;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
@@ -11,7 +12,8 @@ import pages.LoginPage;
 import pages.SettingsPage;
 
 
-import static api.clients.LoginClient.loginClient;
+import static api.clients.LoginClient.*;
+import static api.clients.LoginClient.AuthResponseField.*;
 import static pages.LoginPage.ERROR_MESSAGE_INCORRECT_USERNAME_OR_PASSWORD;
 import static pages.LoginPage.loginPage;
 
@@ -50,25 +52,25 @@ public class LoginTest extends TestBase {
     public void successLoginApiTest() {
         JsonPath response = loginClient.postLogin("valentin", "a789456A@",200);
 
-        String accessToken = response.getString("access_token");
-        String tokenType = response.getString("token_type");
-        String expiresIn = response.getString("expires_in");
-        String refreshToken = response.getString("refresh_token");
-        String scope = response.getString("scope");
-        String sessionId = response.getString("session_id");
+        String accessToken = response.getString(access_token.val);
+        String tokenType = response.getString(token_type.val);
+        String expiresIn_ = response.getString(expires_in.val);
+        String refreshToken_ = response.getString(refresh_token.val);
+        String scope_ = response.getString(scope.val);
+        String sessionId = response.getString(session_id.val);
 
         Assertions.assertNotNull(accessToken);
         Assertions.assertTrue(accessToken.matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+$"));
         Assertions.assertEquals("Bearer", tokenType);
 
-        Assertions.assertNotNull(expiresIn);
-        Assertions.assertEquals("86400", expiresIn);
+        Assertions.assertNotNull(expiresIn_);
+        Assertions.assertEquals("86400", expiresIn_);
 
-        Assertions.assertNotNull(refreshToken);
-        Assertions.assertEquals(64, refreshToken.length());
+        Assertions.assertNotNull(refreshToken_);
+        Assertions.assertEquals(64, refreshToken_.length());
 
-        Assertions.assertNotNull(scope);
-        Assertions.assertEquals("read write", scope);
+        Assertions.assertNotNull(scope_);
+        Assertions.assertEquals("read write", scope_);
 
         Assertions.assertNotNull(sessionId);
         Assertions.assertTrue(sessionId.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
@@ -81,12 +83,12 @@ public class LoginTest extends TestBase {
     public void loginWithInvalidPasswordApiTest() {
         JsonPath errorResponse = loginClient.postLogin("valentin", "a789456A@d", 401);
 
-        String error = errorResponse.getString("error");
-        String errorDescription = errorResponse.getString("error_description");
+        String error = errorResponse.getString(AuthResponseField.error.val);
+        String errorDescription = errorResponse.getString(AuthResponseField.error_description.val);
 
         Assertions.assertNotNull(error);
-        Assertions.assertEquals("invalid_grant", error);
-        Assertions.assertEquals("Invalid username or password", errorDescription);
+        Assertions.assertEquals(ERROR_API_INVALID_GRANT, error);
+        Assertions.assertEquals(ERROR_API_MESSAGE_INCORRECT_USERNAME_OR_PASSWORD, errorDescription);
     }
 
 }
